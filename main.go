@@ -2,6 +2,7 @@ package main
 
 import (
 	database "GoFiber-API/external/database/postgres"
+	"GoFiber-API/external/database/redis"
 	"GoFiber-API/internal/config"
 	internal_logger "GoFiber-API/internal/log"
 	"GoFiber-API/internal/migration"
@@ -38,6 +39,9 @@ func main() {
 		log.Fatalf("Error connect to Database: %s", err)
 		panic(err)
 	}
+
+	// Init Redis Store
+	redis.NewRedisStore()
 
 	// Auto Migrate the database
 	migration.Migrate()
