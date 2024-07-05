@@ -44,6 +44,8 @@ func LoadConfig(path string) (config *EnvConfig) {
 	viper.SetConfigType("env")
 	viper.SetConfigName(".env")
 
+	viper.AutomaticEnv()
+
 	viper.SetDefault("APP_PORT", "3000")
 	viper.SetDefault("APP_NAME", "Go API")
 	viper.SetDefault("APP_DESCRIPTION", "Go API Description")
