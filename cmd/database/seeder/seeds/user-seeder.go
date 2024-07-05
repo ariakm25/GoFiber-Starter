@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/bxcodec/faker/v3"
-	"github.com/google/uuid"
 )
 
 func UserSeeder(count int) {
@@ -25,7 +24,6 @@ func UserSeeder(count int) {
 		Name:      "Admin",
 		Email:     "admin@admin.com",
 		Password:  hashedPassword,
-		UID:       uuid.New().String(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -35,12 +33,10 @@ func UserSeeder(count int) {
 	}
 
 	for i := 0; i < count; i++ {
-
 		newUser := &user.User{
 			Name:      faker.FirstName(),
 			Email:     faker.Email(),
 			Password:  hashedPassword,
-			UID:       uuid.New().String(),
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 		}

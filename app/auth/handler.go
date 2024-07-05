@@ -12,7 +12,6 @@ import (
 
 	pasetoware "github.com/gofiber/contrib/paseto"
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
 	"github.com/hibiken/asynq"
 	"gorm.io/gorm"
 )
@@ -53,7 +52,6 @@ func Register(ctx *fiber.Ctx) error {
 		Name:     registerReq.Name,
 		Email:    registerReq.Email,
 		Password: hashedPassword,
-		UID:      uuid.New().String(),
 	}
 
 	if err := database.Connection.First(user, "email = ?", registerReq.Email).Error; err == nil {
