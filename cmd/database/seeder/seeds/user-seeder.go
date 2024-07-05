@@ -18,7 +18,7 @@ func UserSeeder(count int) {
 
 	insertedCount := 0
 
-	hashedPassword, _ := utils.HashPassword("admin")
+	hashedPassword, _ := utils.HashPassword("password")
 
 	// Admin Seeder
 	adminUser := &user.User{
