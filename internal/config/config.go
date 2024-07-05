@@ -27,6 +27,8 @@ type EnvConfig struct {
 	DB_MAX_LIFETIME_CONNECTION  uint8
 	DB_MAX_IDLE_TIME_CONNECTION uint8
 
+	DB_ENABLE_LOG bool
+
 	REDIS_HOST     string
 	REDIS_PORT     string
 	REDIS_USERNAME string
@@ -66,6 +68,8 @@ func LoadConfig(path string) (config *EnvConfig) {
 	viper.SetDefault("DB_MAX_OPEN_CONNECTION", 50)
 	viper.SetDefault("DB_MAX_LIFETIME_CONNECTION", 60)
 	viper.SetDefault("DB_MAX_IDLE_TIME_CONNECTION", 60)
+
+	viper.SetDefault("DB_ENABLE_LOG", true)
 
 	viper.SetDefault("REDIS_HOST", "localhost")
 	viper.SetDefault("REDIS_PORT", "6379")

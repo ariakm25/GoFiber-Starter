@@ -7,6 +7,7 @@ import (
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var Connection *gorm.DB
@@ -15,7 +16,16 @@ var Connection *gorm.DB
 func ConnectDB(host string, port string, user string, password string, db_name string, ssl_mode string) error {
 	// Build the DSN
 	build_dsn := "host=" + host + " port=" + port + " user=" + user + " password=" + password + " dbname=" + db_name + " sslmode=" + ssl_mode
-	db, err := gorm.Open(postgres.Open(build_dsn), &gorm.Config{})
+
+	logMode := logger.Default.LogMode(logger.Info)
+
+	if !config.GetConfig.DB_ENABLE_LOG {
+		logMode = logger.Default.LogMode(logger.Silent)
+	}
+
+	db, err := gorm.Open(postgres.Open(build_dsn), &gorm.Config{
+		Logger: logMode,
+	})
 	if err != nil {
 		return err
 	}
