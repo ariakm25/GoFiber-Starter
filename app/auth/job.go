@@ -4,8 +4,6 @@ import (
 	internal_log "GoFiber-API/internal/log"
 	"context"
 	"encoding/json"
-	"log"
-	"time"
 
 	"github.com/hibiken/asynq"
 )
@@ -34,10 +32,6 @@ func HandleAuthResetPasswordJob(ctx context.Context, task *asynq.Task) error {
 	}
 
 	// TODO Implement send an email to the user
-
-	time.Sleep(5 * time.Second)
-
-	log.Printf("Sending Email to User: Email=%s", payload.Email)
 
 	return nil
 }

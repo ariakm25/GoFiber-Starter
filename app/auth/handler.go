@@ -8,7 +8,6 @@ import (
 	"GoFiber-API/internal/queue"
 	"GoFiber-API/internal/utils"
 	"errors"
-	"log"
 	"time"
 
 	pasetoware "github.com/gofiber/contrib/paseto"
@@ -182,21 +181,16 @@ func ResetPassword(ctx *fiber.Ctx) error {
 	findUser := database.Connection.First(user, "email = ?", resetPasswordReq.Email)
 
 	if findUser.Error == nil {
-		for i := 0; i < 1000; i++ {
-
-			task, err := NewAuthResetPasswordJob(resetPasswordReq.Email)
-			if err != nil {
-				internal_log.Logger.Sugar().Errorf("NewAuthResetPasswordJob Error: %v", err)
-			}
-
-			info, err := queue.QueueClient.Enqueue(task, asynq.Retention(1*time.Hour))
-
-			if err != nil {
-				internal_log.Logger.Sugar().Errorf("NewAuthResetPasswordJob Enqueue Error: %v", err)
-			}
-			log.Printf("enqueued task: id=%s queue=%s", info.ID, info.Queue)
+		task, err := NewAuthResetPasswordJob(resetPasswordReq.Email)
+		if err != nil {
+			internal_log.Logger.Sugar().Errorf("NewAuthResetPasswordJob Error: %v", err)
 		}
 
+		_, err = queue.QueueClient.Enqueue(task, asynq.Retention(1*time.Hour))
+
+		if err != nil {
+			internal_log.Logger.Sugar().Errorf("NewAuthResetPasswordJob Enqueue Error: %v", err)
+		}
 	}
 
 	return response.NewResponse(
