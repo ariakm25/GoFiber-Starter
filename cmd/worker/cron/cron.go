@@ -2,13 +2,14 @@ package main
 
 import (
 	"GoFiber-API/internal/config"
-	"GoFiber-API/internal/log"
+	internal_logger "GoFiber-API/internal/log"
 
 	"github.com/hibiken/asynq"
 )
 
 func main() {
 	config.InitConfig(".")
+	internal_logger.InitLogger()
 
 	scheduler := asynq.NewScheduler(
 		asynq.RedisClientOpt{
@@ -31,11 +32,11 @@ func main() {
 	// )
 
 	// if err != nil {
-	// 	internal_log.Logger.Sugar().Errorf("Error registering an task: %s", err.Error())
+	// 	internal_logger.Logger.Sugar().Errorf("Error registering an task: %s", err.Error())
 	// }
 	// log.Printf("registered an task: %q\n", taskID)
 
 	if err := scheduler.Run(); err != nil {
-		internal_log.Logger.Sugar().Errorf("Error running scheduler: %s", err.Error())
+		internal_logger.Logger.Sugar().Errorf("Error running scheduler: %s", err.Error())
 	}
 }

@@ -37,6 +37,13 @@ type EnvConfig struct {
 	JOB_CONCURRENCY         int
 	JOB_MONITORING_USERNAME string
 	JOB_MONITORING_PASSWORD string
+
+	SMTP_HOST       string
+	SMTP_PORT       string
+	SMTP_USERNAME   string
+	SMTP_PASSWORD   string
+	SMTP_FROM_EMAIL string
+	SMTP_FROM_NAME  string
 }
 
 var GetConfig *EnvConfig

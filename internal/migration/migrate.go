@@ -10,6 +10,7 @@ import (
 func Migrate() {
 	err := database.Connection.AutoMigrate(
 		&user.User{},
+		&user.UserToken{},
 	)
 
 	if err != nil {

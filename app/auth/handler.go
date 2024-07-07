@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"GoFiber-API/app/user"
+	user_module "GoFiber-API/app/user"
 	database "GoFiber-API/external/database/postgres"
 	"GoFiber-API/infra/response"
 	internal_log "GoFiber-API/internal/log"
@@ -48,7 +48,7 @@ func Register(ctx *fiber.Ctx) error {
 		).Send(ctx)
 	}
 
-	user := &user.User{
+	user := &user_module.User{
 		Name:     registerReq.Name,
 		Email:    registerReq.Email,
 		Password: hashedPassword,
@@ -99,7 +99,7 @@ func Login(ctx *fiber.Ctx) error {
 		).Send(ctx)
 	}
 
-	var user = &user.User{}
+	var user = &user_module.User{}
 
 	findUser := database.Connection.First(user, "email = ?", loginReq.Email)
 
@@ -143,7 +143,7 @@ func Login(ctx *fiber.Ctx) error {
 }
 
 func Me(ctx *fiber.Ctx) error {
-	payload := ctx.Locals(pasetoware.DefaultContextKey).(*user.User)
+	payload := ctx.Locals(pasetoware.DefaultContextKey).(*user_module.User)
 
 	return response.NewResponse(
 		response.WithMessage("success get user data"),
@@ -151,8 +151,7 @@ func Me(ctx *fiber.Ctx) error {
 	).Send(ctx)
 }
 
-func ResetPassword(ctx *fiber.Ctx) error {
-
+func ForgotPassword(ctx *fiber.Ctx) error {
 	resetPasswordReq := &ResetPasswordRequest{}
 
 	if err := ctx.BodyParser(resetPasswordReq); err != nil {
@@ -174,22 +173,44 @@ func ResetPassword(ctx *fiber.Ctx) error {
 		).Send(ctx)
 	}
 
-	var user = &user.User{}
+	var user user_module.User
 
-	findUser := database.Connection.First(user, "email = ?", resetPasswordReq.Email)
+	err := database.Connection.Where(&user_module.User{
+		Email: resetPasswordReq.Email,
+	}).First(&user).Error
 
-	if findUser.Error == nil {
-		task, err := NewAuthResetPasswordJob(resetPasswordReq.Email)
-		if err != nil {
-			internal_log.Logger.Sugar().Errorf("NewAuthResetPasswordJob Error: %v", err)
-		}
+	if err == nil {
+		var checkResetPasswordToken user_module.UserToken
 
-		_, err = queue.QueueClient.Enqueue(task, asynq.Retention(1*time.Hour))
+		database.Connection.Order("created_at desc").Where(&user_module.UserToken{
+			UserID: user.UID,
+			Type:   user_module.UserTokenTypeResetPassword,
+		}).First(&checkResetPasswordToken)
 
-		if err != nil {
-			internal_log.Logger.Sugar().Errorf("NewAuthResetPasswordJob Enqueue Error: %v", err)
+		waitMin := time.Minute * 10
+
+		diff := time.Now().Sub(checkResetPasswordToken.CreatedAt)
+
+		if diff < waitMin {
+			return response.NewResponse(
+				response.WithMessage("Please wait 10 minutes before requesting a new password reset email."),
+				response.WithError(response.ErrorBadRequest),
+			).Send(ctx)
 		}
 	}
+
+	task, err := NewAuthResetPasswordJob(resetPasswordReq.Email, user.UID)
+	if err != nil {
+		internal_log.Logger.Sugar().Errorf("NewAuthResetPasswordJob Error: %v", err)
+	}
+
+	_, err = queue.QueueClient.Enqueue(task, asynq.Retention(1*time.Hour))
+
+	if err != nil {
+		internal_log.Logger.Sugar().Errorf("NewAuthResetPasswordJob Enqueue Error: %v", err)
+	}
+
+	database.Connection.Delete(&user_module.UserToken{}, "user_id = ? AND type = ?", user.UID, user_module.UserTokenTypeResetPassword)
 
 	return response.NewResponse(
 		response.WithMessage("A password reset email will be sent if the email is registered in our system."),

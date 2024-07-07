@@ -2,14 +2,25 @@ package main
 
 import (
 	"GoFiber-API/app/auth"
+	database "GoFiber-API/external/database/postgres"
+	"GoFiber-API/external/mail"
 	"GoFiber-API/internal/config"
 	internal_logger "GoFiber-API/internal/log"
+	"log"
 
 	"github.com/hibiken/asynq"
 )
 
 func main() {
 	config.InitConfig(".")
+	internal_logger.InitLogger()
+	mail.NewMail()
+	// Connect to the database
+	err := database.ConnectDB(config.GetConfig.DB_HOST, config.GetConfig.DB_PORT, config.GetConfig.DB_USER, config.GetConfig.DB_PASSWORD, config.GetConfig.DB_NAME, config.GetConfig.DB_SSL_MODE)
+	if err != nil {
+		log.Fatalf("Error connect to Database: %s", err)
+		panic(err)
+	}
 
 	srv := asynq.NewServer(
 		asynq.RedisClientOpt{
