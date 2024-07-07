@@ -267,6 +267,14 @@ func ValidateResetPasswordToken(ctx *fiber.Ctx) error {
 		).Send(ctx)
 	}
 
+	if userToken.ExpiredAt.Before(time.Now()) {
+		return response.NewResponse(
+			response.WithMessage("token has been expired"),
+			response.WithError(response.ErrorBadRequest),
+		).Send(ctx)
+
+	}
+
 	return response.NewResponse(
 		response.WithMessage("success validate token"),
 	).Send(ctx)
@@ -319,6 +327,13 @@ func ResetPassword(ctx *fiber.Ctx) error {
 		return response.NewResponse(
 			response.WithMessage("invalid email or token"),
 			response.WithError(response.ErrorNotFound),
+		).Send(ctx)
+	}
+
+	if userToken.ExpiredAt.Before(time.Now()) {
+		return response.NewResponse(
+			response.WithMessage("token has been expired"),
+			response.WithError(response.ErrorBadRequest),
 		).Send(ctx)
 	}
 
