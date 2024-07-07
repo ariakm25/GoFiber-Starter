@@ -13,6 +13,8 @@ func Module(router fiber.Router) {
 	route.Post("/register", Register)
 
 	route.Post("/forgot-password", ForgotPassword)
+	route.Post("/validate-reset-password-token", ValidateResetPasswordToken)
+	route.Post("/reset-password", ResetPassword)
 
 	route.Get("/me", middleware.AuthMiddleware(), Me)
 

@@ -152,7 +152,7 @@ func Me(ctx *fiber.Ctx) error {
 }
 
 func ForgotPassword(ctx *fiber.Ctx) error {
-	resetPasswordReq := &ResetPasswordRequest{}
+	resetPasswordReq := &ForgotPasswordRequest{}
 
 	if err := ctx.BodyParser(resetPasswordReq); err != nil {
 		return response.NewResponse(
@@ -189,7 +189,7 @@ func ForgotPassword(ctx *fiber.Ctx) error {
 
 		waitMin := time.Minute * 10
 
-		diff := time.Now().Sub(checkResetPasswordToken.CreatedAt)
+		diff := time.Since(checkResetPasswordToken.CreatedAt)
 
 		if diff < waitMin {
 			return response.NewResponse(
@@ -215,4 +215,135 @@ func ForgotPassword(ctx *fiber.Ctx) error {
 	return response.NewResponse(
 		response.WithMessage("A password reset email will be sent if the email is registered in our system."),
 	).Send(ctx)
+}
+
+func ValidateResetPasswordToken(ctx *fiber.Ctx) error {
+	validateResetPasswordTokenReq := &ValidateResetPasswordTokenRequest{}
+
+	if err := ctx.BodyParser(validateResetPasswordTokenReq); err != nil {
+		return response.NewResponse(
+			response.WithMessage(err.Error()),
+			response.WithError(response.ErrorUnprocessableEntity),
+			response.WithMessage("invalid request"),
+		).Send(ctx)
+	}
+
+	validate := utils.NewValidator()
+
+	if err := validate.Struct(validateResetPasswordTokenReq); err != nil {
+		return response.NewResponse(
+			response.WithMessage(err.Error()),
+			response.WithError(response.ErrorBadRequest),
+			response.WithData(utils.ValidatorErrors(err)),
+			response.WithMessage("invalid request"),
+		).Send(ctx)
+	}
+
+	var user user_module.User
+
+	err := database.Connection.Where(&user_module.User{
+		Email: validateResetPasswordTokenReq.Email,
+	}).First(&user).Error
+
+	if err != nil {
+		return response.NewResponse(
+			response.WithMessage("invalid email or token"),
+			response.WithError(response.ErrorNotFound),
+		).Send(ctx)
+	}
+
+	var userToken user_module.UserToken
+
+	err = database.Connection.Where(&user_module.UserToken{
+		UserID: user.UID,
+		Token:  validateResetPasswordTokenReq.Token,
+		Type:   user_module.UserTokenTypeResetPassword,
+	}).First(&userToken).Error
+
+	if err != nil {
+		return response.NewResponse(
+			response.WithMessage("invalid email or token"),
+			response.WithError(response.ErrorNotFound),
+		).Send(ctx)
+	}
+
+	return response.NewResponse(
+		response.WithMessage("success validate token"),
+	).Send(ctx)
+}
+
+func ResetPassword(ctx *fiber.Ctx) error {
+	resetPasswordReq := &ResetPasswordRequest{}
+
+	if err := ctx.BodyParser(resetPasswordReq); err != nil {
+		return response.NewResponse(
+			response.WithMessage(err.Error()),
+			response.WithError(response.ErrorUnprocessableEntity),
+			response.WithMessage("invalid request"),
+		).Send(ctx)
+	}
+
+	validate := utils.NewValidator()
+
+	if err := validate.Struct(resetPasswordReq); err != nil {
+		return response.NewResponse(
+			response.WithMessage(err.Error()),
+			response.WithError(response.ErrorBadRequest),
+			response.WithData(utils.ValidatorErrors(err)),
+			response.WithMessage("invalid request"),
+		).Send(ctx)
+	}
+
+	var user user_module.User
+
+	err := database.Connection.Where(&user_module.User{
+		Email: resetPasswordReq.Email,
+	}).First(&user).Error
+
+	if err != nil {
+		return response.NewResponse(
+			response.WithMessage("invalid email or token"),
+			response.WithError(response.ErrorNotFound),
+		).Send(ctx)
+	}
+
+	var userToken user_module.UserToken
+
+	err = database.Connection.Where(&user_module.UserToken{
+		UserID: user.UID,
+		Token:  resetPasswordReq.Token,
+		Type:   user_module.UserTokenTypeResetPassword,
+	}).First(&userToken).Error
+
+	if err != nil {
+		return response.NewResponse(
+			response.WithMessage("invalid email or token"),
+			response.WithError(response.ErrorNotFound),
+		).Send(ctx)
+	}
+
+	hashedPassword, err := utils.HashPassword(resetPasswordReq.Password)
+
+	if err != nil {
+		internal_log.Logger.Error(err.Error())
+		return response.NewResponse(
+			response.WithMessage("failed to reset password"),
+			response.WithError(response.ErrorInternal),
+		).Send(ctx)
+	}
+
+	user.Password = hashedPassword
+
+	if err := database.Connection.Save(&user).Error; err != nil {
+		internal_log.Logger.Error(err.Error())
+		return response.NewResponse(
+			response.WithMessage("failed to reset password"),
+			response.WithError(response.ErrorInternal),
+		).Send(ctx)
+	}
+
+	return response.NewResponse(
+		response.WithMessage("success reset password"),
+	).Send(ctx)
+
 }
