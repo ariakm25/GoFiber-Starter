@@ -3,6 +3,7 @@ package seeds
 import (
 	user_entities "GoFiber-API/app/user/entities"
 	database "GoFiber-API/external/database/postgres"
+	internal_casbin "GoFiber-API/internal/casbin"
 	internal_log "GoFiber-API/internal/log"
 	"GoFiber-API/internal/utils"
 
@@ -28,9 +29,22 @@ func UserSeeder(count int) {
 		UpdatedAt: time.Now(),
 	}
 
-	if err := database.Connection.FirstOrCreate(adminUser, "email = ?", adminUser.Email).Error; err != nil {
-		internal_log.Logger.Error("Error creating Admin: " + err.Error())
+	adminQ := database.Connection.FirstOrCreate(adminUser, "email = ?", adminUser.Email)
+
+	if adminQ.Error != nil {
+		internal_log.Logger.Error("Error creating Admin: " + adminQ.Error.Error())
 	}
+
+	if adminQ.RowsAffected > 0 {
+		insertedCount++
+	}
+
+	internal_casbin.CasbinEnforcer.AddPermissionForUser("admin", "user", "create")
+	internal_casbin.CasbinEnforcer.AddPermissionForUser("admin", "user", "read")
+	internal_casbin.CasbinEnforcer.AddPermissionForUser("admin", "user", "update")
+	internal_casbin.CasbinEnforcer.AddPermissionForUser("admin", "user", "delete")
+
+	internal_casbin.CasbinEnforcer.AddRoleForUser("admin", adminUser.UID)
 
 	for i := 0; i < count; i++ {
 		newUser := &user_entities.User{
