@@ -4,6 +4,7 @@ import (
 	user_entities "GoFiber-API/app/user/entities"
 	database "GoFiber-API/external/database/postgres"
 	"GoFiber-API/infra/response"
+	internal_casbin "GoFiber-API/internal/casbin"
 	"GoFiber-API/internal/config"
 	internal_log "GoFiber-API/internal/log"
 	"encoding/json"
@@ -98,7 +99,14 @@ func InitRbac(pathModel string, adapter *gormadapter.Adapter) {
 
 			user := checkLocal.(*user_entities.User)
 
-			return user.UID
+			role, err := internal_casbin.CasbinEnforcer.GetRolesForUser(user.UID)
+
+			if err != nil {
+				return ""
+			}
+
+			return role[0]
+
 		},
 	})
 }
