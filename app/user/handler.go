@@ -1,6 +1,7 @@
 package user
 
 import (
+	user_entities "GoFiber-API/app/user/entities"
 	database "GoFiber-API/external/database/postgres"
 	"GoFiber-API/infra/response"
 	"net/http"
@@ -9,7 +10,7 @@ import (
 )
 
 func GetUsers(c *fiber.Ctx) error {
-	var users []User
+	var users []user_entities.User
 	database.Connection.Find(&users)
 
 	return response.NewResponse(
@@ -19,7 +20,7 @@ func GetUsers(c *fiber.Ctx) error {
 }
 
 func CreateUser(c *fiber.Ctx) error {
-	user := new(User)
+	user := new(user_entities.User)
 	if err := c.BodyParser(user); err != nil {
 		return response.NewResponse(
 			response.WithHttpCode(http.StatusBadRequest),

@@ -1,7 +1,7 @@
 package migration
 
 import (
-	"GoFiber-API/app/user"
+	user_entities "GoFiber-API/app/user/entities"
 	database "GoFiber-API/external/database/postgres"
 	"fmt"
 	"log"
@@ -9,8 +9,8 @@ import (
 
 func Migrate() {
 	err := database.Connection.AutoMigrate(
-		&user.User{},
-		&user.UserToken{},
+		&user_entities.User{},
+		&user_entities.UserToken{},
 	)
 
 	if err != nil {

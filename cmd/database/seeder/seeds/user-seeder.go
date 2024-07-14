@@ -1,7 +1,7 @@
 package seeds
 
 import (
-	"GoFiber-API/app/user"
+	user_entities "GoFiber-API/app/user/entities"
 	database "GoFiber-API/external/database/postgres"
 	internal_log "GoFiber-API/internal/log"
 	"GoFiber-API/internal/utils"
@@ -20,7 +20,7 @@ func UserSeeder(count int) {
 	hashedPassword, _ := utils.HashPassword("password")
 
 	// Admin Seeder
-	adminUser := &user.User{
+	adminUser := &user_entities.User{
 		Name:      "Admin",
 		Email:     "admin@admin.com",
 		Password:  hashedPassword,
@@ -33,7 +33,7 @@ func UserSeeder(count int) {
 	}
 
 	for i := 0; i < count; i++ {
-		newUser := &user.User{
+		newUser := &user_entities.User{
 			Name:      faker.FirstName(),
 			Email:     faker.Email(),
 			Password:  hashedPassword,

@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"GoFiber-API/app/user"
+	user_entities "GoFiber-API/app/user/entities"
 	database "GoFiber-API/external/database/postgres"
 	"GoFiber-API/external/mail"
 	"GoFiber-API/internal/config"
@@ -41,10 +41,10 @@ func HandleAuthResetPasswordJob(ctx context.Context, task *asynq.Task) error {
 
 	token := utils.GenerateResetPasswordToken()
 
-	userToken := &user.UserToken{
+	userToken := &user_entities.UserToken{
 		UserID:    payload.UserUID,
 		Token:     token,
-		Type:      user.UserTokenTypeResetPassword,
+		Type:      user_entities.UserTokenTypeResetPassword,
 		ExpiredAt: time.Now().Add(time.Hour * 24),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),

@@ -4,6 +4,8 @@ import (
 	database "GoFiber-API/external/database/postgres"
 	"GoFiber-API/external/database/redis"
 	"GoFiber-API/external/mail"
+	"GoFiber-API/infra/middleware"
+	internal_casbin "GoFiber-API/internal/casbin"
 	"GoFiber-API/internal/config"
 	internal_logger "GoFiber-API/internal/log"
 	"GoFiber-API/internal/migration"
@@ -49,6 +51,10 @@ func main() {
 
 	// Auto Migrate the database
 	migration.Migrate()
+
+	// Init Casbin
+	internal_casbin.InitAdapter("casbin-rbac.conf", config.GetConfig.DB_HOST, config.GetConfig.DB_PORT, config.GetConfig.DB_USER, config.GetConfig.DB_PASSWORD, config.GetConfig.DB_NAME, config.GetConfig.DB_SSL_MODE)
+	middleware.InitRbac("casbin-rbac.conf", internal_casbin.CasbinAdapter)
 
 	// Setup Fiber App
 	api := fiber.New(fiber.Config{
