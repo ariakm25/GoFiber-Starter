@@ -44,7 +44,7 @@ func UserSeeder(count int) {
 	internal_casbin.CasbinEnforcer.AddPermissionForUser("admin", "user", "update")
 	internal_casbin.CasbinEnforcer.AddPermissionForUser("admin", "user", "delete")
 
-	internal_casbin.CasbinEnforcer.AddRoleForUser("admin", adminUser.UID)
+	internal_casbin.CasbinEnforcer.AddRoleForUser(adminUser.UID, "admin")
 
 	for i := 0; i < count; i++ {
 		newUser := &user_entities.User{

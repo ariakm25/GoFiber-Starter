@@ -11,8 +11,7 @@ import (
 
 func GetUsers(c *fiber.Ctx) error {
 	var users []user_entities.User
-	database.Connection.Find(&users)
-
+	database.Connection.Limit(100).Find(&users)
 	return response.NewResponse(
 		response.WithMessage("get list products success"),
 		response.WithData(users),
