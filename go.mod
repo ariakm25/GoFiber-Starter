@@ -4,7 +4,10 @@ go 1.21.2
 
 require (
 	github.com/bxcodec/faker/v3 v3.8.1
+	github.com/casbin/casbin/v2 v2.97.0
+	github.com/casbin/gorm-adapter/v3 v3.25.0
 	github.com/go-playground/validator/v10 v10.22.0
+	github.com/gofiber/contrib/casbin v1.0.15
 	github.com/gofiber/contrib/paseto v1.2.1
 	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/gofiber/storage/redis/v3 v3.1.2
@@ -26,8 +29,6 @@ require (
 	github.com/aead/chacha20poly1305 v0.0.0-20201124145622-1a5aba2a8b29 // indirect
 	github.com/aead/poly1305 v0.0.0-20180717145839-3fee0db0b635 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
-	github.com/casbin/casbin/v2 v2.97.0 // indirect
-	github.com/casbin/gorm-adapter/v3 v3.25.0 // indirect
 	github.com/casbin/govaluate v1.1.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
@@ -40,7 +41,6 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
-	github.com/gofiber/contrib/casbin v1.0.15 // indirect
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
