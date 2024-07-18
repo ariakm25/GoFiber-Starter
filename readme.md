@@ -89,3 +89,49 @@ localhost:3000/monitoring/jobs
 - [Zap](https://github.com/uber-go/zap)
 - [Gomail](https://github.com/go-gomail/gomail)
 - [Validator](https://github.com/go-playground/validator)
+
+---
+
+---
+
+## Checklist
+
+---
+
+### Auth
+
+- [ ] Logout
+- [x] Role & Permission
+- [x] Reset Password
+- [x] Forgot Password
+- [x] Register
+- [x] Login
+
+### Mailing
+
+- [ ] Template
+- [x] Send
+
+### System
+
+- [x] Scheduler / Cron Job
+- [x] Queue
+- [ ] File Upload: S3
+
+### Data
+
+- [ ] Pagination
+
+### Database
+
+- [x] Auto Migration
+- [ ] Versioned Migration
+- [x] Seeder
+
+### Monitoring
+
+- [x] Job Monitoring (Scheduler & Queue)
+
+### Caching
+
+- [x] Redis Service
