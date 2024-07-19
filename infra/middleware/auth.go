@@ -23,7 +23,7 @@ func AuthMiddleware() func(*fiber.Ctx) error {
 		SymmetricKey: []byte(config.GetConfig.PASETO_LOCAL_SECRET_SYMMETRIC_KEY),
 
 		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
-			errorStatus := response.ErrorBadRequest
+			errorStatus := response.ErrorUnauthorized
 			errorMessage := err.Error()
 			if errors.Is(err, pasetoware.ErrDataUnmarshal) || errors.Is(err, pasetoware.ErrExpiredToken) || errors.Is(err, pasetoware.ErrMissingToken) || errors.Is(err, pasetoware.ErrIncorrectTokenPrefix) {
 				errorStatus = response.ErrorUnauthorized
@@ -53,7 +53,6 @@ func AuthMiddleware() func(*fiber.Ctx) error {
 				paseto.ValidAt(time.Now()), paseto.Subject(pasetoTokenSubject),
 				paseto.ForAudience(pasetoTokenAudience),
 			); err != nil {
-				internal_log.Logger.Sugar().Errorf("Error validate token: %s", err.Error())
 				return "", err
 			}
 
