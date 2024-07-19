@@ -4,6 +4,7 @@ import (
 	user_entities "GoFiber-API/app/user/entities"
 	database "GoFiber-API/external/database/postgres"
 	"GoFiber-API/infra/response"
+	"GoFiber-API/internal/utils"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
@@ -11,10 +12,27 @@ import (
 
 func GetUsers(c *fiber.Ctx) error {
 	var users []user_entities.User
-	database.Connection.Limit(100).Find(&users)
+
+	query := database.Connection.Model(&user_entities.User{})
+
+	if name := c.Query("name"); name != "" {
+		query = query.Where("name LIKE ?", "%"+name+"%")
+	}
+
+	if email := c.Query("email"); email != "" {
+		query = query.Where("email LIKE ?", "%"+email+"%")
+	}
+
+	page := utils.Paginate(&utils.PaginateParam{
+		DB:      query,
+		Page:    c.QueryInt("page", 1),
+		Limit:   c.QueryInt("limit", 10),
+		ShowSQL: true,
+	}, &users)
+
 	return response.NewResponse(
 		response.WithMessage("get list products success"),
-		response.WithData(users),
+		response.WithData(page),
 	).Send(c)
 }
 

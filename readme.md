@@ -121,7 +121,7 @@ localhost:3000/monitoring/jobs
 
 ### Data
 
-- [ ] Pagination
+- [x] Pagination
 
 ### Database
 
