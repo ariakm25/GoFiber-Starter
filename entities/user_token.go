@@ -1,4 +1,4 @@
-package user_entities
+package entities
 
 import (
 	internal_log "GoFiber-API/internal/log"

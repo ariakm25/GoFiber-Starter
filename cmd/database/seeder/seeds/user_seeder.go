@@ -1,7 +1,7 @@
 package seeds
 
 import (
-	user_entities "GoFiber-API/app/user/entities"
+	"GoFiber-API/entities"
 	database "GoFiber-API/external/database/postgres"
 	internal_casbin "GoFiber-API/internal/casbin"
 	internal_log "GoFiber-API/internal/log"
@@ -21,7 +21,7 @@ func UserSeeder(count int) {
 	hashedPassword, _ := utils.HashPassword("password")
 
 	// Admin Seeder
-	adminUser := &user_entities.User{
+	adminUser := &entities.User{
 		Name:      "Admin",
 		Email:     "admin@admin.com",
 		Password:  hashedPassword,
@@ -47,7 +47,7 @@ func UserSeeder(count int) {
 	internal_casbin.CasbinEnforcer.AddRoleForUser(adminUser.UID, "admin")
 
 	for i := 0; i < count; i++ {
-		newUser := &user_entities.User{
+		newUser := &entities.User{
 			Name:      faker.FirstName(),
 			Email:     faker.Email(),
 			Password:  hashedPassword,

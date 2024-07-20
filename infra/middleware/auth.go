@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	user_entities "GoFiber-API/app/user/entities"
+	"GoFiber-API/entities"
 	database "GoFiber-API/external/database/postgres"
 	"GoFiber-API/infra/response"
 	internal_casbin "GoFiber-API/internal/casbin"
@@ -56,7 +56,7 @@ func AuthMiddleware() func(*fiber.Ctx) error {
 				return "", err
 			}
 
-			var user = &user_entities.User{}
+			var user = &entities.User{}
 
 			findUser := database.Connection.First(user, "uid = ?", payload.Get(pasetoTokenField))
 
@@ -96,7 +96,7 @@ func InitRbac(pathModel string, adapter *gormadapter.Adapter) {
 				return ""
 			}
 
-			user := checkLocal.(*user_entities.User)
+			user := checkLocal.(*entities.User)
 
 			role, err := internal_casbin.CasbinEnforcer.GetRolesForUser(user.UID)
 

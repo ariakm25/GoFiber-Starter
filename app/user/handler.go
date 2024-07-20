@@ -1,7 +1,7 @@
 package user
 
 import (
-	user_entities "GoFiber-API/app/user/entities"
+	user_entities "GoFiber-API/entities"
 	database "GoFiber-API/external/database/postgres"
 	"GoFiber-API/infra/response"
 	"GoFiber-API/internal/utils"

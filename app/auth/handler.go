@@ -1,7 +1,7 @@
 package auth
 
 import (
-	user_entities "GoFiber-API/app/user/entities"
+	"GoFiber-API/entities"
 	database "GoFiber-API/external/database/postgres"
 	"GoFiber-API/infra/response"
 	internal_log "GoFiber-API/internal/log"
@@ -48,7 +48,7 @@ func Register(ctx *fiber.Ctx) error {
 		).Send(ctx)
 	}
 
-	user := &user_entities.User{
+	user := &entities.User{
 		Name:     registerReq.Name,
 		Email:    registerReq.Email,
 		Password: hashedPassword,
@@ -99,7 +99,7 @@ func Login(ctx *fiber.Ctx) error {
 		).Send(ctx)
 	}
 
-	var user = &user_entities.User{}
+	var user = &entities.User{}
 
 	findUser := database.Connection.First(user, "email = ?", loginReq.Email)
 
@@ -143,7 +143,7 @@ func Login(ctx *fiber.Ctx) error {
 }
 
 func Me(ctx *fiber.Ctx) error {
-	payload := ctx.Locals(pasetoware.DefaultContextKey).(*user_entities.User)
+	payload := ctx.Locals(pasetoware.DefaultContextKey).(*entities.User)
 
 	return response.NewResponse(
 		response.WithMessage("success get user data"),
@@ -173,18 +173,18 @@ func ForgotPassword(ctx *fiber.Ctx) error {
 		).Send(ctx)
 	}
 
-	var user user_entities.User
+	var user entities.User
 
-	err := database.Connection.Where(&user_entities.User{
+	err := database.Connection.Where(&entities.User{
 		Email: resetPasswordReq.Email,
 	}).First(&user).Error
 
 	if err == nil {
-		var checkResetPasswordToken user_entities.UserToken
+		var checkResetPasswordToken entities.UserToken
 
-		database.Connection.Order("created_at desc").Where(&user_entities.UserToken{
+		database.Connection.Order("created_at desc").Where(&entities.UserToken{
 			UserID: user.UID,
-			Type:   user_entities.UserTokenTypeResetPassword,
+			Type:   entities.UserTokenTypeResetPassword,
 		}).First(&checkResetPasswordToken)
 
 		waitMin := time.Minute * 10
@@ -210,7 +210,7 @@ func ForgotPassword(ctx *fiber.Ctx) error {
 		internal_log.Logger.Sugar().Errorf("NewAuthResetPasswordJob Enqueue Error: %v", err)
 	}
 
-	database.Connection.Delete(&user_entities.UserToken{}, "user_id = ? AND type = ?", user.UID, user_entities.UserTokenTypeResetPassword)
+	database.Connection.Delete(&entities.UserToken{}, "user_id = ? AND type = ?", user.UID, entities.UserTokenTypeResetPassword)
 
 	return response.NewResponse(
 		response.WithMessage("A password reset email will be sent if the email is registered in our system."),
@@ -239,9 +239,9 @@ func ValidateResetPasswordToken(ctx *fiber.Ctx) error {
 		).Send(ctx)
 	}
 
-	var user user_entities.User
+	var user entities.User
 
-	err := database.Connection.Where(&user_entities.User{
+	err := database.Connection.Where(&entities.User{
 		Email: validateResetPasswordTokenReq.Email,
 	}).First(&user).Error
 
@@ -252,12 +252,12 @@ func ValidateResetPasswordToken(ctx *fiber.Ctx) error {
 		).Send(ctx)
 	}
 
-	var userToken user_entities.UserToken
+	var userToken entities.UserToken
 
-	err = database.Connection.Where(&user_entities.UserToken{
+	err = database.Connection.Where(&entities.UserToken{
 		UserID: user.UID,
 		Token:  validateResetPasswordTokenReq.Token,
-		Type:   user_entities.UserTokenTypeResetPassword,
+		Type:   entities.UserTokenTypeResetPassword,
 	}).First(&userToken).Error
 
 	if err != nil {
@@ -302,9 +302,9 @@ func ResetPassword(ctx *fiber.Ctx) error {
 		).Send(ctx)
 	}
 
-	var user user_entities.User
+	var user entities.User
 
-	err := database.Connection.Where(&user_entities.User{
+	err := database.Connection.Where(&entities.User{
 		Email: resetPasswordReq.Email,
 	}).First(&user).Error
 
@@ -315,12 +315,12 @@ func ResetPassword(ctx *fiber.Ctx) error {
 		).Send(ctx)
 	}
 
-	var userToken user_entities.UserToken
+	var userToken entities.UserToken
 
-	err = database.Connection.Where(&user_entities.UserToken{
+	err = database.Connection.Where(&entities.UserToken{
 		UserID: user.UID,
 		Token:  resetPasswordReq.Token,
-		Type:   user_entities.UserTokenTypeResetPassword,
+		Type:   entities.UserTokenTypeResetPassword,
 	}).First(&userToken).Error
 
 	if err != nil {
