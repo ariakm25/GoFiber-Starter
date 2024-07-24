@@ -5,7 +5,8 @@ FROM golang:1.22 AS builder
 WORKDIR /app
 
 # Copy the Go module files and download dependencies
-COPY go.mod go.sum ./
+COPY go.mod ./
+COPY go.sum ./
 RUN go mod download
 RUN go mod verify
 RUN go mod tidy
@@ -14,5 +15,7 @@ RUN go mod tidy
 COPY . .
 
 # Build the application
-RUN go build -o application
+RUN go build -o ./build/queue ./cmd/worker/queue/queue.go
 
+# Run the application
+CMD ["sh", "-c", "./build/queue"]
