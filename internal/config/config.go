@@ -29,6 +29,7 @@ type EnvConfig struct {
 
 	DB_ENABLE_LOG bool
 
+	REDIS_PREFIX   string
 	REDIS_HOST     string
 	REDIS_PORT     string
 	REDIS_USERNAME string
@@ -78,6 +79,7 @@ func LoadConfig(path string) (config *EnvConfig) {
 
 	viper.SetDefault("DB_ENABLE_LOG", true)
 
+	viper.SetDefault("REDIS_PREFIX", "gofiber_api_")
 	viper.SetDefault("REDIS_HOST", "localhost")
 	viper.SetDefault("REDIS_PORT", "6379")
 	viper.SetDefault("REDIS_USERNAME", "")
