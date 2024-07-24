@@ -24,4 +24,4 @@ tmp
 app.log
 
 # Build
-application
+build/
