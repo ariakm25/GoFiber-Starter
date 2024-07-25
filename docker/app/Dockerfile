@@ -15,7 +15,7 @@ RUN go mod tidy
 COPY . .
 
 # Build the application
-RUN go build -o ./build/app main.go
+RUN go build -o ./build/app ./cmd/app/main.go
 
 # Expose the port the application listens on
 EXPOSE 3000
