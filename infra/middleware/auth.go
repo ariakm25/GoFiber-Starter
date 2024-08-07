@@ -64,6 +64,10 @@ func AuthMiddleware() func(*fiber.Ctx) error {
 				return nil, pasetoware.ErrExpiredToken
 			}
 
+			if user.Status != "active" {
+				return nil, errors.New("user is " + user.Status)
+			}
+
 			return user, nil
 		},
 		TokenPrefix: "Bearer",
