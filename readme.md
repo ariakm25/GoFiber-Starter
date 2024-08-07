@@ -100,7 +100,7 @@ localhost:3000/monitoring/jobs
 
 ### Auth
 
-- [ ] Logout
+- [x] Logout
 - [x] Role & Permission
 - [x] Reset Password
 - [x] Forgot Password

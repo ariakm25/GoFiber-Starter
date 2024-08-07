@@ -3,12 +3,15 @@ package middleware
 import (
 	"GoFiber-API/entities"
 	database "GoFiber-API/external/database/postgres"
+	"GoFiber-API/external/database/redis"
 	"GoFiber-API/infra/response"
 	internal_casbin "GoFiber-API/internal/casbin"
 	"GoFiber-API/internal/config"
 	internal_log "GoFiber-API/internal/log"
+	"context"
 	"encoding/json"
 	"errors"
+	"strings"
 	"time"
 
 	gormadapter "github.com/casbin/gorm-adapter/v3"
@@ -69,6 +72,20 @@ func AuthMiddleware() func(*fiber.Ctx) error {
 			}
 
 			return user, nil
+		},
+		SuccessHandler: func(c *fiber.Ctx) error {
+			originalToken := strings.Split(c.Get("Authorization"), "Bearer ")[1]
+
+			checkBlacklist, _ := redis.RedisStore.Conn().Get(context.Background(), "blacklist_token:"+originalToken).Result()
+
+			if checkBlacklist == "true" {
+				return response.NewResponse(
+					response.WithMessage(pasetoware.ErrExpiredToken.Error()),
+					response.WithError(response.ErrorUnauthorized),
+				).Send(c)
+			}
+
+			return c.Next()
 		},
 		TokenPrefix: "Bearer",
 	})

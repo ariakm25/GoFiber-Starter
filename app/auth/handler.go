@@ -3,11 +3,15 @@ package auth
 import (
 	"GoFiber-API/entities"
 	database "GoFiber-API/external/database/postgres"
+	"GoFiber-API/external/database/redis"
 	"GoFiber-API/infra/response"
+	"GoFiber-API/internal/config"
 	internal_log "GoFiber-API/internal/log"
 	"GoFiber-API/internal/queue"
 	"GoFiber-API/internal/utils"
+	"context"
 	"errors"
+	"strings"
 	"time"
 
 	pasetoware "github.com/gofiber/contrib/paseto"
@@ -361,4 +365,15 @@ func ResetPassword(ctx *fiber.Ctx) error {
 		response.WithMessage("success reset password"),
 	).Send(ctx)
 
+}
+
+func Logout(ctx *fiber.Ctx) error {
+
+	token := strings.Split(ctx.Get("Authorization"), "Bearer ")[1]
+
+	redis.RedisStore.Conn().Set(context.Background(), "blacklist_token:"+token, "true", time.Hour*time.Duration(config.GetConfig.PASETO_LOCAL_EXPIRATION_HOURS))
+
+	return response.NewResponse(
+		response.WithMessage("success logout"),
+	).Send(ctx)
 }

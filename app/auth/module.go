@@ -18,4 +18,6 @@ func Module(router fiber.Router) {
 
 	route.Get("/me", middleware.AuthMiddleware(), Me)
 
+	route.Post("/logout", middleware.AuthMiddleware(), Logout)
+
 }
