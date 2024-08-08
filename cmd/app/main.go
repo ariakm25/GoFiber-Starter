@@ -11,6 +11,7 @@ import (
 	"GoFiber-API/internal/migration"
 	"flag"
 	"log"
+	"time"
 
 	"GoFiber-API/app"
 	"GoFiber-API/internal/queue"
@@ -18,6 +19,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/helmet"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 )
@@ -67,6 +69,13 @@ func main() {
 	api.Use(logger.New())
 	api.Use(cors.New())
 	api.Use(helmet.New())
+	api.Use(limiter.New(limiter.Config{
+		Max:        config.GetConfig.RATE_LIMITER_MAX,
+		Expiration: time.Duration(config.GetConfig.RATE_LIMITER_TTL_IN_SECOND) * time.Second,
+		// Next: func(c *fiber.Ctx) bool {
+		// 	return c.IP() == "127.0.0.1"
+		// },
+	}))
 
 	// Main Module
 	app.MainModule(api)

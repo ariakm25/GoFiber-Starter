@@ -118,6 +118,7 @@ localhost:3000/monitoring/jobs
 - [x] Queue
 - [x] Logging
 - [ ] File Upload: S3
+- [x] Rate Limiter
 
 ### Data
 

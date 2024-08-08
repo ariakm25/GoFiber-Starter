@@ -45,6 +45,9 @@ type EnvConfig struct {
 	SMTP_PASSWORD   string
 	SMTP_FROM_EMAIL string
 	SMTP_FROM_NAME  string
+
+	RATE_LIMITER_MAX           int
+	RATE_LIMITER_TTL_IN_SECOND int
 }
 
 var GetConfig *EnvConfig
