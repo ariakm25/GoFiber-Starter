@@ -17,7 +17,8 @@ func NewMail() {
 	pass := config.GetConfig.SMTP_PASSWORD
 
 	if host == "" || port == 0 || username == "" || pass == "" {
-		internal_log.Logger.Fatal("WARN: SMTP configuration is not set")
+		internal_log.Logger.Warn("WARN: SMTP configuration is not set")
+		return
 	}
 
 	Mail = gomail.NewDialer(host, port, username, pass)
