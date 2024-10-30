@@ -1,6 +1,7 @@
 package greeter
 
 import (
+	"GoFiber-API/internal/config"
 	pb "GoFiber-API/proto"
 	"context"
 	"google.golang.org/grpc"
@@ -20,7 +21,7 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 }
 
 func StartGrpcGreeter() {
-	lis, err := net.Listen("tcp", ":19188")
+	lis, err := net.Listen("tcp", "localhost:"+config.GetConfig.APP_GRPC_PORT)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

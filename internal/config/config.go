@@ -11,6 +11,7 @@ type EnvConfig struct {
 	APP_DESCRIPTION string
 	APP_VERSION     string
 	APP_PORT        string
+	APP_GRPC_PORT   string
 	APP_SECRET_KEY  string
 
 	PASETO_LOCAL_SECRET_SYMMETRIC_KEY string
@@ -60,6 +61,7 @@ func LoadConfig(path string) (config *EnvConfig) {
 	viper.AutomaticEnv()
 
 	viper.SetDefault("APP_PORT", "3000")
+	viper.SetDefault("APP_GRPC_PORT", "3001")
 	viper.SetDefault("APP_NAME", "Go API")
 	viper.SetDefault("APP_DESCRIPTION", "Go API Description")
 	viper.SetDefault("APP_VERSION", "0.0.0.0")

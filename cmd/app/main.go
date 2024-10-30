@@ -25,6 +25,10 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 )
 
+var (
+	is_grpc = flag.Bool("grpc", false, "Use grpc instead of http")
+)
+
 func main() {
 	// Parse command-line flags
 	flag.Parse()
@@ -59,30 +63,32 @@ func main() {
 	internal_casbin.InitAdapter("casbin-rbac.conf", config.GetConfig.DB_HOST, config.GetConfig.DB_PORT, config.GetConfig.DB_USER, config.GetConfig.DB_PASSWORD, config.GetConfig.DB_NAME, config.GetConfig.DB_SSL_MODE)
 	middleware.InitRbac("casbin-rbac.conf", internal_casbin.CasbinAdapter)
 
-	// Setup Fiber App
-	api := fiber.New(fiber.Config{
-		Prefork: true,
-		AppName: config.GetConfig.APP_NAME,
-	})
+	if *is_grpc {
+		greeter.StartGrpcGreeter()
+	} else {
+		// Setup Fiber App
+		api := fiber.New(fiber.Config{
+			Prefork: true,
+			AppName: config.GetConfig.APP_NAME,
+		})
 
-	// Middleware
-	api.Use(recover.New())
-	api.Use(logger.New())
-	api.Use(cors.New())
-	api.Use(helmet.New())
-	api.Use(limiter.New(limiter.Config{
-		Max:        config.GetConfig.RATE_LIMITER_MAX,
-		Expiration: time.Duration(config.GetConfig.RATE_LIMITER_TTL_IN_SECOND) * time.Second,
-		// Next: func(c *fiber.Ctx) bool {
-		// 	return c.IP() == "127.0.0.1"
-		// },
-	}))
+		// Middleware
+		api.Use(recover.New())
+		api.Use(logger.New())
+		api.Use(cors.New())
+		api.Use(helmet.New())
+		api.Use(limiter.New(limiter.Config{
+			Max:        config.GetConfig.RATE_LIMITER_MAX,
+			Expiration: time.Duration(config.GetConfig.RATE_LIMITER_TTL_IN_SECOND) * time.Second,
+			// Next: func(c *fiber.Ctx) bool {
+			// 	return c.IP() == "127.0.0.1"
+			// },
+		}))
 
-	// Main Module
-	app.MainModule(api)
+		// Main Module
+		app.MainModule(api)
 
-	go greeter.StartGrpcGreeter()
-
-	api.Listen(":" + config.GetConfig.APP_PORT)
+		api.Listen(":" + config.GetConfig.APP_PORT)
+	}
 
 }
