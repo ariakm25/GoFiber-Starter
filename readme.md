@@ -19,6 +19,7 @@ Go Fiber App Boilerplate
 - [Go](https://go.dev/)
 - [Redis](https://redis.io/)
 - [Postgres](https://www.postgresql.org/)
+- [Protobuf](https://protobuf.dev/)
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
@@ -52,6 +53,7 @@ air
 
 ```
 go run cmd/database/seeder/seeder.go --table=all --count=100
+protoc --go_out=. --go-grpc_out=. proto/greeter.proto
 ```
 
 ## ⛏️ Worker

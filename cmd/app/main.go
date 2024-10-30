@@ -1,6 +1,7 @@
 package main
 
 import (
+	"GoFiber-API/app/greeter"
 	database "GoFiber-API/external/database/postgres"
 	"GoFiber-API/external/database/redis"
 	"GoFiber-API/external/mail"
@@ -79,6 +80,8 @@ func main() {
 
 	// Main Module
 	app.MainModule(api)
+
+	go greeter.StartGrpcGreeter()
 
 	api.Listen(":" + config.GetConfig.APP_PORT)
 
