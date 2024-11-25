@@ -23,8 +23,8 @@ func NewRedisStore() error {
 	RedisStore = redis.New(redis.Config{
 		Host:      config.GetConfig.REDIS_HOST,
 		Port:      port,
-		Username:  "",
-		Password:  "",
+		Username:  config.GetConfig.REDIS_USERNAME,
+		Password:  config.GetConfig.REDIS_PASSWORD,
 		Database:  0,
 		Reset:     false,
 		TLSConfig: nil,
