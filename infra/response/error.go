@@ -26,8 +26,8 @@ func (e Error) Error() string {
 var (
 	ErrorInternal            = NewError("internal server error", "500", http.StatusInternalServerError)
 	ErrorBadRequest          = NewError("bad request", "400", http.StatusBadRequest)
-	ErrorUnprocessableEntity = NewError("unprocessable entity", "422", http.StatusUnprocessableEntity)
-	ErrorNotFound            = NewError("not found", "404", http.StatusNotFound)
 	ErrorUnauthorized        = NewError("unauthorized", "401", http.StatusUnauthorized)
 	ErrorForbiddenAccess     = NewError("forbidden", "403", http.StatusForbidden)
+	ErrorNotFound            = NewError("not found", "404", http.StatusNotFound)
+	ErrorUnprocessableEntity = NewError("unprocessable entity", "422", http.StatusUnprocessableEntity)
 )

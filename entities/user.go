@@ -11,11 +11,11 @@ import (
 // User
 
 type User struct {
-	UID       string         `json:"uid" gorm:"primary_key;type:varchar(50);not null;uniqueIndex:idx_user_uid;<-:create" validate:"uuid"`
-	Name      string         `json:"name" gorm:"type:varchar(200);not null" validate:"required,min=3,max=100"`
-	Email     string         `json:"email" gorm:"type:varchar(255);not null;uniqueIndex:idx_user_email" validate:"required,email"`
-	Status    string         `json:"status" gorm:"type:varchar(20);not null;default:'active'" validate:"required,oneof=active inactive suspended"`
-	Password  string         `json:"-" gorm:"not null" validate:"required,min=6"`
+	UID       string         `json:"uid" gorm:"primary_key;type:varchar(50);not null;uniqueIndex:idx_user_uid;<-:create"`
+	Name      string         `json:"name" gorm:"type:varchar(200);not null"`
+	Email     string         `json:"email" gorm:"type:varchar(255);not null;uniqueIndex:idx_user_email"`
+	Status    string         `json:"status" gorm:"type:varchar(20);not null;default:'active'"`
+	Password  string         `json:"-" gorm:"not null"`
 	CreatedAt time.Time      `json:"createdAt" gorm:"autoCreateTime;<-:create"`
 	UpdatedAt time.Time      `json:"updatedAt" gorm:"autoCreateTime;autoUpdateTime"`
 	DeletedAt gorm.DeletedAt `json:"deletedAt" gorm:"index:idx_user_deleted_at"`

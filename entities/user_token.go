@@ -16,10 +16,10 @@ const (
 )
 
 type UserToken struct {
-	UID       string        `json:"uid" gorm:"primary_key;type:varchar(50);not null;uniqueIndex:idx_user_token_uid;<-:create" validate:"uuid"`
-	UserID    string        `json:"userId" gorm:"type:varchar(50);not null;index:idx_user_token_user_id" validate:"uuid"`
-	Token     string        `json:"token" gorm:"type:varchar(255);not null;uniqueIndex:idx_user_token_token" validate:"required"`
-	Type      UserTokenType `json:"type" gorm:"type:varchar(50);not null" validate:"required"`
+	UID       string        `json:"uid" gorm:"primary_key;type:varchar(50);not null;uniqueIndex:idx_user_token_uid;<-:create"`
+	UserID    string        `json:"userId" gorm:"type:varchar(50);not null;index:idx_user_token_user_id"`
+	Token     string        `json:"token" gorm:"type:varchar(255);not null;uniqueIndex:idx_user_token_token"`
+	Type      UserTokenType `json:"type" gorm:"type:varchar(50);not null"`
 	ExpiredAt time.Time     `json:"expiredAt" gorm:"not null"`
 	CreatedAt time.Time     `json:"createdAt" gorm:"autoCreateTime;<-:create"`
 	UpdatedAt time.Time     `json:"updatedAt" gorm:"autoCreateTime;autoUpdateTime"`

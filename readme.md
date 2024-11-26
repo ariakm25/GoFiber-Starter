@@ -1,5 +1,6 @@
-<h3 align="center">Go Fiber Starter</h3>
-
+<h3 align="center">
+  Go Fiber Starter
+</h3>
 ---
 
 ## 📝 Table of Contents
@@ -22,6 +23,16 @@ Go Fiber App Boilerplate
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
+### Clone Repository
+
+```
+git clone https://github.com/ariakm25/GoFiber-Starter.git
+```
+
+```
+cd GoFiber-Starter
+```
+
 ### Install dependencies
 
 ```
@@ -39,7 +50,7 @@ cp .env.example .env
 run:
 
 ```
-go run main.go
+go run cmd/app/main.go
 ```
 
 or run with live reload using [Air](https://github.com/air-verse/air):
@@ -137,3 +148,7 @@ localhost:3000/monitoring/jobs
 ### Caching
 
 - [x] Redis Service
+
+### Docs
+
+- [ ] API Docs
