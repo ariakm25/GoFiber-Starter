@@ -25,10 +25,9 @@ func GetUsers(c *fiber.Ctx) error {
 	}
 
 	page := utils.Paginate(&utils.PaginateParam{
-		DB:      query,
-		Page:    c.QueryInt("page", 1),
-		Limit:   c.QueryInt("limit", 10),
-		ShowSQL: true,
+		DB:    query,
+		Page:  c.QueryInt("page", 1),
+		Limit: c.QueryInt("limit", 10),
 	}, &users)
 
 	return response.NewResponse(
@@ -220,10 +219,9 @@ func TrashUsers(c *fiber.Ctx) error {
 	query = query.Unscoped().Where("deleted_at IS NOT NULL")
 
 	page := utils.Paginate(&utils.PaginateParam{
-		DB:      query,
-		Page:    c.QueryInt("page", 1),
-		Limit:   c.QueryInt("limit", 10),
-		ShowSQL: true,
+		DB:    query,
+		Page:  c.QueryInt("page", 1),
+		Limit: c.QueryInt("limit", 10),
 	}, &users)
 
 	return response.NewResponse(

@@ -25,11 +25,12 @@ type Paginator struct {
 }
 
 func Paginate(p *PaginateParam, result interface{}) *Paginator {
-	db := p.DB
+	db := p.DB.Session(&gorm.Session{})
 
 	if p.ShowSQL {
 		db = db.Debug()
 	}
+
 	if p.Page < 1 {
 		p.Page = 1
 	}
