@@ -64,6 +64,7 @@ func AuthMiddleware() func(*fiber.Ctx) error {
 			findUser := database.Connection.First(user, "uid = ?", payload.Get(pasetoTokenField))
 
 			if findUser.Error != nil {
+				internal_log.Logger.Sugar().Errorf("Error find user: %s", findUser.Error.Error())
 				return nil, pasetoware.ErrExpiredToken
 			}
 

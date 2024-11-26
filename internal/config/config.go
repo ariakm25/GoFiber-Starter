@@ -13,8 +13,10 @@ type EnvConfig struct {
 	APP_PORT        string
 	APP_SECRET_KEY  string
 
+	PREFORK_ENABLED bool
+
 	PASETO_LOCAL_SECRET_SYMMETRIC_KEY string
-	PASETO_LOCAL_EXPIRATION_HOURS     int8
+	PASETO_LOCAL_EXPIRATION_HOURS     uint64
 
 	DB_HOST                     string
 	DB_PORT                     string
@@ -22,12 +24,13 @@ type EnvConfig struct {
 	DB_PASSWORD                 string
 	DB_NAME                     string
 	DB_SSL_MODE                 string // values are "disable", "require", "verify-ca", "verify-full"
-	DB_MAX_IDLE_CONNECTION      uint8
-	DB_MAX_OPEN_CONNECTION      uint8
-	DB_MAX_LIFETIME_CONNECTION  uint8
-	DB_MAX_IDLE_TIME_CONNECTION uint8
+	DB_MAX_IDLE_CONNECTION      uint16
+	DB_MAX_OPEN_CONNECTION      uint16
+	DB_MAX_LIFETIME_CONNECTION  uint16
+	DB_MAX_IDLE_TIME_CONNECTION uint16
 
-	DB_ENABLE_LOG bool
+	DB_ENABLE_LOG      bool
+	REQUEST_ENABLE_LOG bool
 
 	REDIS_PREFIX   string
 	REDIS_HOST     string
@@ -47,7 +50,7 @@ type EnvConfig struct {
 	SMTP_FROM_NAME  string
 
 	RATE_LIMITER_MAX           int
-	RATE_LIMITER_TTL_IN_SECOND int
+	RATE_LIMITER_TTL_IN_SECOND uint64
 }
 
 var GetConfig *EnvConfig
@@ -65,6 +68,8 @@ func LoadConfig(path string) (config *EnvConfig) {
 	viper.SetDefault("APP_VERSION", "0.0.0.0")
 	viper.SetDefault("APP_SECRET_KEY", "_iWv(UWEp^pf$<?")
 
+	viper.SetDefault("PREFORK_ENABLED", false)
+
 	viper.SetDefault("PASETO_LOCAL_SECRET_SYMMETRIC_KEY", "CX3cZoWd13exnqlxAWMwtj2TvRQXKOKi")
 	viper.SetDefault("PASETO_LOCAL_EXPIRATION_HOURS", 9)
 
@@ -81,6 +86,7 @@ func LoadConfig(path string) (config *EnvConfig) {
 	viper.SetDefault("DB_MAX_IDLE_TIME_CONNECTION", 60)
 
 	viper.SetDefault("DB_ENABLE_LOG", true)
+	viper.SetDefault("REQUEST_ENABLE_LOG", true)
 
 	viper.SetDefault("REDIS_PREFIX", "gofiber_api_")
 	viper.SetDefault("REDIS_HOST", "localhost")

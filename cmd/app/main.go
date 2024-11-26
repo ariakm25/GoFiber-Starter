@@ -60,22 +60,44 @@ func main() {
 
 	// Setup Fiber App
 	api := fiber.New(fiber.Config{
-		Prefork: true,
+		Prefork: config.GetConfig.PREFORK_ENABLED,
 		AppName: config.GetConfig.APP_NAME,
 	})
 
 	// Middleware
 	api.Use(recover.New())
-	api.Use(logger.New())
+
+	if config.GetConfig.REQUEST_ENABLE_LOG {
+		api.Use(logger.New())
+	}
 	api.Use(cors.New())
 	api.Use(helmet.New())
 	api.Use(limiter.New(limiter.Config{
 		Max:        config.GetConfig.RATE_LIMITER_MAX,
 		Expiration: time.Duration(config.GetConfig.RATE_LIMITER_TTL_IN_SECOND) * time.Second,
-		// Next: func(c *fiber.Ctx) bool {
-		// 	return c.IP() == "127.0.0.1"
-		// },
+		Next: func(c *fiber.Ctx) bool {
+			return c.IP() == "127.0.0.1"
+		},
+		KeyGenerator: func(c *fiber.Ctx) string {
+			if c.Get("x-forwarded-for") != "" {
+				return c.Get("x-forwarded-for")
+			}
+
+			if c.Get("cf-connecting-ip") != "" {
+				return c.Get("cf-connecting-ip")
+			}
+
+			return c.IP()
+		},
 	}))
+
+	api.Get("/", func(c *fiber.Ctx) error {
+		return c.JSON(fiber.Map{
+			"app":         config.GetConfig.APP_NAME,
+			"description": config.GetConfig.APP_DESCRIPTION,
+			"version":     config.GetConfig.APP_VERSION,
+		})
+	})
 
 	// Main Module
 	app.MainModule(api)
