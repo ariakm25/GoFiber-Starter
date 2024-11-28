@@ -7,7 +7,7 @@ type LoginRequest struct {
 
 type RegisterRequest struct {
 	Name                 string `json:"name" form:"name" validate:"min=3,max=100"`
-	Email                string `json:"email" form:"email" validate:"email"`
+	Email                string `json:"email" form:"email" validate:"required,email,unique=users.email"`
 	Password             string `json:"password" form:"password" validate:"min=6"`
 	PasswordConfirmation string `json:"password_confirmation" form:"password_confirmation" validate:"eqfield=Password"`
 }

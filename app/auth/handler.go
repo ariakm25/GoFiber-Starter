@@ -26,7 +26,7 @@ func Register(ctx *fiber.Ctx) error {
 	if err := ctx.BodyParser(registerReq); err != nil {
 		return response.NewResponse(
 			response.WithMessage(err.Error()),
-			response.WithError(response.ErrorUnprocessableEntity),
+			response.WithError(response.ErrorBadRequest),
 			response.WithMessage("invalid request"),
 		).Send(ctx)
 	}
@@ -36,7 +36,7 @@ func Register(ctx *fiber.Ctx) error {
 	if err := validate.Struct(registerReq); err != nil {
 		return response.NewResponse(
 			response.WithMessage(err.Error()),
-			response.WithError(response.ErrorBadRequest),
+			response.WithError(response.ErrorUnprocessableEntity),
 			response.WithData(utils.ValidatorErrors(err)),
 			response.WithMessage("invalid request"),
 		).Send(ctx)
@@ -56,13 +56,6 @@ func Register(ctx *fiber.Ctx) error {
 		Name:     registerReq.Name,
 		Email:    registerReq.Email,
 		Password: hashedPassword,
-	}
-
-	if err := database.Connection.First(user, "email = ?", registerReq.Email).Error; err == nil {
-		return response.NewResponse(
-			response.WithMessage("email already registered"),
-			response.WithError(response.ErrorUnprocessableEntity),
-		).Send(ctx)
 	}
 
 	if err := database.Connection.Create(user).Error; err != nil {
@@ -87,7 +80,7 @@ func Login(ctx *fiber.Ctx) error {
 	if err := ctx.BodyParser(loginReq); err != nil {
 		return response.NewResponse(
 			response.WithMessage(err.Error()),
-			response.WithError(response.ErrorUnprocessableEntity),
+			response.WithError(response.ErrorBadRequest),
 			response.WithMessage("invalid request"),
 		).Send(ctx)
 	}
@@ -97,7 +90,7 @@ func Login(ctx *fiber.Ctx) error {
 	if err := validate.Struct(loginReq); err != nil {
 		return response.NewResponse(
 			response.WithMessage(err.Error()),
-			response.WithError(response.ErrorBadRequest),
+			response.WithError(response.ErrorUnprocessableEntity),
 			response.WithData(utils.ValidatorErrors(err)),
 			response.WithMessage("invalid request"),
 		).Send(ctx)
@@ -111,6 +104,9 @@ func Login(ctx *fiber.Ctx) error {
 		if errors.Is(findUser.Error, gorm.ErrRecordNotFound) {
 			return response.NewResponse(
 				response.WithMessage("invalid email or password"),
+				response.WithData(fiber.Map{
+					"email": "invalid email or password",
+				}),
 				response.WithError(response.ErrorUnauthorized),
 			).Send(ctx)
 		}
@@ -124,6 +120,9 @@ func Login(ctx *fiber.Ctx) error {
 	if err := utils.ComparePassword(user.Password, loginReq.Password); err != nil {
 		return response.NewResponse(
 			response.WithMessage("invalid email or password"),
+			response.WithData(fiber.Map{
+				"email": "invalid email or password",
+			}),
 			response.WithError(response.ErrorUnauthorized),
 		).Send(ctx)
 	}
@@ -161,7 +160,7 @@ func ForgotPassword(ctx *fiber.Ctx) error {
 	if err := ctx.BodyParser(resetPasswordReq); err != nil {
 		return response.NewResponse(
 			response.WithMessage(err.Error()),
-			response.WithError(response.ErrorUnprocessableEntity),
+			response.WithError(response.ErrorBadRequest),
 			response.WithMessage("invalid request"),
 		).Send(ctx)
 	}
@@ -171,7 +170,7 @@ func ForgotPassword(ctx *fiber.Ctx) error {
 	if err := validate.Struct(resetPasswordReq); err != nil {
 		return response.NewResponse(
 			response.WithMessage(err.Error()),
-			response.WithError(response.ErrorBadRequest),
+			response.WithError(response.ErrorUnprocessableEntity),
 			response.WithData(utils.ValidatorErrors(err)),
 			response.WithMessage("invalid request"),
 		).Send(ctx)
@@ -227,7 +226,7 @@ func ValidateResetPasswordToken(ctx *fiber.Ctx) error {
 	if err := ctx.BodyParser(validateResetPasswordTokenReq); err != nil {
 		return response.NewResponse(
 			response.WithMessage(err.Error()),
-			response.WithError(response.ErrorUnprocessableEntity),
+			response.WithError(response.ErrorBadRequest),
 			response.WithMessage("invalid request"),
 		).Send(ctx)
 	}
@@ -237,7 +236,7 @@ func ValidateResetPasswordToken(ctx *fiber.Ctx) error {
 	if err := validate.Struct(validateResetPasswordTokenReq); err != nil {
 		return response.NewResponse(
 			response.WithMessage(err.Error()),
-			response.WithError(response.ErrorBadRequest),
+			response.WithError(response.ErrorUnprocessableEntity),
 			response.WithData(utils.ValidatorErrors(err)),
 			response.WithMessage("invalid request"),
 		).Send(ctx)
@@ -290,7 +289,7 @@ func ResetPassword(ctx *fiber.Ctx) error {
 	if err := ctx.BodyParser(resetPasswordReq); err != nil {
 		return response.NewResponse(
 			response.WithMessage(err.Error()),
-			response.WithError(response.ErrorUnprocessableEntity),
+			response.WithError(response.ErrorBadRequest),
 			response.WithMessage("invalid request"),
 		).Send(ctx)
 	}
@@ -300,7 +299,7 @@ func ResetPassword(ctx *fiber.Ctx) error {
 	if err := validate.Struct(resetPasswordReq); err != nil {
 		return response.NewResponse(
 			response.WithMessage(err.Error()),
-			response.WithError(response.ErrorBadRequest),
+			response.WithError(response.ErrorUnprocessableEntity),
 			response.WithData(utils.ValidatorErrors(err)),
 			response.WithMessage("invalid request"),
 		).Send(ctx)
@@ -369,7 +368,7 @@ func ResetPassword(ctx *fiber.Ctx) error {
 
 func Logout(ctx *fiber.Ctx) error {
 
-	token := strings.Split(ctx.Get("Authorization"), "Bearer ")[1]
+	token := strings.Split(ctx.Get(fiber.HeaderAuthorization), "Bearer ")[1]
 
 	redis.RedisStore.Conn().Set(context.Background(), "blacklist_token:"+token, "true", time.Hour*time.Duration(config.GetConfig.PASETO_LOCAL_EXPIRATION_HOURS))
 

@@ -75,7 +75,7 @@ func AuthMiddleware() func(*fiber.Ctx) error {
 			return user, nil
 		},
 		SuccessHandler: func(c *fiber.Ctx) error {
-			originalToken := strings.Split(c.Get("Authorization"), "Bearer ")[1]
+			originalToken := strings.Split(c.Get(fiber.HeaderAuthorization), "Bearer ")[1]
 
 			checkBlacklist, _ := redis.RedisStore.Conn().Get(context.Background(), "blacklist_token:"+originalToken).Result()
 

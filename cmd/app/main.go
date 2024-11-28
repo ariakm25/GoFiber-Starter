@@ -79,8 +79,8 @@ func main() {
 			return c.IP() == "127.0.0.1"
 		},
 		KeyGenerator: func(c *fiber.Ctx) string {
-			if c.Get("x-forwarded-for") != "" {
-				return c.Get("x-forwarded-for")
+			if c.Get(fiber.HeaderXForwardedFor) != "" {
+				return c.Get(fiber.HeaderXForwardedFor)
 			}
 
 			if c.Get("cf-connecting-ip") != "" {
