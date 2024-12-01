@@ -16,8 +16,10 @@ func Module(router fiber.Router) {
 	route.Post("/validate-reset-password-token", ValidateResetPasswordToken)
 	route.Post("/reset-password", ResetPassword)
 
-	route.Get("/me", middleware.AuthMiddleware(), Me)
+	route.Post("/refresh-token", RefreshToken)
 
-	route.Post("/logout", middleware.AuthMiddleware(), Logout)
+	route.Post("/logout", Logout)
+
+	route.Get("/me", middleware.AuthMiddleware(), Me)
 
 }

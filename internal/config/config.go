@@ -18,6 +18,8 @@ type EnvConfig struct {
 	PASETO_LOCAL_SECRET_SYMMETRIC_KEY string
 	PASETO_LOCAL_EXPIRATION_HOURS     uint64
 
+	REFRESH_TOKEN_EXPIRATION_DAYS uint16
+
 	DB_HOST                     string
 	DB_PORT                     string
 	DB_USER                     string
@@ -72,6 +74,8 @@ func LoadConfig(path string) (config *EnvConfig) {
 
 	viper.SetDefault("PASETO_LOCAL_SECRET_SYMMETRIC_KEY", "CX3cZoWd13exnqlxAWMwtj2TvRQXKOKi")
 	viper.SetDefault("PASETO_LOCAL_EXPIRATION_HOURS", 9)
+
+	viper.SetDefault("REFRESH_TOKEN_EXPIRATION_DAYS", 14)
 
 	viper.SetDefault("DB_HOST", "localhost")
 	viper.SetDefault("DB_PORT", "5432")

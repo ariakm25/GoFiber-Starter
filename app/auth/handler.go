@@ -137,10 +137,29 @@ func Login(ctx *fiber.Ctx) error {
 		).Send(ctx)
 	}
 
+	refresh_token := utils.GenerateRefreshToken(user.UID)
+
+	user_agent := ctx.Get("User-Agent")
+
+	if err := database.Connection.Create(&entities.UserSession{
+		UserID:       user.UID,
+		RefreshToken: refresh_token,
+		DeviceInfo:   user_agent,
+		ExpiredAt:    time.Now().Add(time.Hour * time.Duration(24*config.GetConfig.REFRESH_TOKEN_EXPIRATION_DAYS)),
+	}).Error; err != nil {
+		internal_log.Logger.Error(err.Error())
+
+		return response.NewResponse(
+			response.WithMessage("failed to login"),
+			response.WithError(response.ErrorInternal),
+		).Send(ctx)
+	}
+
 	return response.NewResponse(
 		response.WithMessage("success login"),
 		response.WithData(fiber.Map{
-			"token": token,
+			"token":         token,
+			"refresh_token": refresh_token,
 		}),
 	).Send(ctx)
 }
@@ -370,9 +389,132 @@ func Logout(ctx *fiber.Ctx) error {
 
 	token := strings.Split(ctx.Get(fiber.HeaderAuthorization), "Bearer ")[1]
 
-	redis.RedisStore.Conn().Set(context.Background(), "blacklist_token:"+token, "true", time.Hour*time.Duration(config.GetConfig.PASETO_LOCAL_EXPIRATION_HOURS))
+	if token != "" {
+		data, err := utils.DecryptPaseto(token)
+
+		if err != nil {
+			internal_log.Logger.Error(err.Error())
+		}
+
+		redis.RedisStore.Conn().Set(context.Background(), "blacklist_token:"+token, "true", time.Until(data.Expiration))
+	}
+
+	logoutReq := &LogoutRequest{}
+
+	if err := ctx.BodyParser(logoutReq); err != nil {
+		return response.NewResponse(
+			response.WithMessage(err.Error()),
+			response.WithError(response.ErrorBadRequest),
+			response.WithMessage("invalid request"),
+		).Send(ctx)
+	}
+
+	if logoutReq.RefreshToken != "" {
+		database.Connection.Delete(&entities.UserSession{}, "refresh_token = ?", logoutReq.RefreshToken)
+	}
 
 	return response.NewResponse(
 		response.WithMessage("success logout"),
+	).Send(ctx)
+}
+
+func RefreshToken(ctx *fiber.Ctx) error {
+	refreshTokenReq := &RefreshTokenRequest{}
+
+	if err := ctx.BodyParser(refreshTokenReq); err != nil {
+		return response.NewResponse(
+			response.WithMessage(err.Error()),
+			response.WithError(response.ErrorBadRequest),
+			response.WithMessage("invalid request"),
+		).Send(ctx)
+	}
+
+	validate := utils.NewValidator()
+
+	if err := validate.Struct(refreshTokenReq); err != nil {
+		return response.NewResponse(
+			response.WithMessage(err.Error()),
+			response.WithError(response.ErrorUnprocessableEntity),
+			response.WithData(utils.ValidatorErrors(err)),
+			response.WithMessage("invalid request"),
+		).Send(ctx)
+	}
+
+	var userSession entities.UserSession
+
+	err := database.Connection.Where(&entities.UserSession{
+		RefreshToken: refreshTokenReq.RefreshToken,
+	}).First(&userSession).Error
+
+	if err != nil {
+		return response.NewResponse(
+			response.WithMessage("invalid refresh token"),
+			response.WithError(response.ErrorUnauthorized),
+		).Send(ctx)
+	}
+
+	if userSession.ExpiredAt.Before(time.Now()) {
+		return response.NewResponse(
+			response.WithMessage("refresh token has been expired"),
+			response.WithError(response.ErrorUnauthorized),
+		).Send(ctx)
+	}
+
+	var user entities.User
+
+	err = database.Connection.Where(&entities.User{
+		UID: userSession.UserID,
+	}).First(&user).Error
+
+	if err != nil {
+		return response.NewResponse(
+			response.WithMessage("user not found"),
+			response.WithError(response.ErrorNotFound),
+		).Send(ctx)
+	}
+
+	newToken, err := utils.GenerateLocalPaseto(user.UID)
+
+	if err != nil {
+		internal_log.Logger.Error(err.Error())
+		return response.NewResponse(
+			response.WithMessage("failed generate token"),
+			response.WithError(response.ErrorInternal),
+		).Send(ctx)
+	}
+
+	newRefreshToken := utils.GenerateRefreshToken(user.UID)
+
+	user_agent := ctx.Get("User-Agent")
+
+	userSession.RefreshToken = newRefreshToken
+	userSession.DeviceInfo = user_agent
+
+	if err := database.Connection.Save(&userSession).Error; err != nil {
+		internal_log.Logger.Error(err.Error())
+		return response.NewResponse(
+			response.WithMessage("failed to refresh token"),
+			response.WithError(response.ErrorInternal),
+		).Send(ctx)
+	}
+
+	token := strings.Split(ctx.Get(fiber.HeaderAuthorization), "Bearer ")[1]
+
+	if token != "" {
+		data, err := utils.DecryptPaseto(token)
+
+		if err != nil {
+			internal_log.Logger.Error(err.Error())
+		}
+
+		redis.RedisStore.Conn().Set(context.Background(), "blacklist_token:"+token, "true", time.Until(data.Expiration))
+	}
+
+	return response.NewResponse(
+		response.WithMessage("success refresh token"),
+		response.WithData(fiber.Map{
+			"token":         newToken,
+			"refresh_token": newRefreshToken,
+		}),
 	).Send(ctx)
 }

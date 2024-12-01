@@ -11,6 +11,7 @@ func Migrate() {
 	err := database.Connection.AutoMigrate(
 		&entities.User{},
 		&entities.UserToken{},
+		&entities.UserSession{},
 	)
 
 	if err != nil {

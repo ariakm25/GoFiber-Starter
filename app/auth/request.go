@@ -27,3 +27,11 @@ type ResetPasswordRequest struct {
 	Password             string `json:"password" form:"password" validate:"min=6"`
 	PasswordConfirmation string `json:"password_confirmation" form:"password_confirmation" validate:"eqfield=Password"`
 }
+
+type LogoutRequest struct {
+	RefreshToken string `json:"refresh_token" form:"refresh_token"`
+}
+
+type RefreshTokenRequest struct {
+	RefreshToken string `json:"refresh_token" form:"refresh_token" validate:"required"`
+}

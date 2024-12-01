@@ -117,6 +117,7 @@ localhost:3000/monitoring/jobs
 - [x] Forgot Password
 - [x] Register
 - [x] Login
+- [x] Refresh Token
 
 ### Mailing
 
