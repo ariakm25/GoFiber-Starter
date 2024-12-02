@@ -8,6 +8,7 @@ type CreateUserRequest struct {
 }
 
 type UpdateUserRequest struct {
+	ID       string `json:"id" form:"id" validate:"required,exist=users.uid"`
 	Name     string `json:"name" form:"name" validate:"omitempty,min=3,max=100"`
 	Email    string `json:"email" form:"email" validate:"omitempty,email"`
 	Status   string `json:"status" form:"status" validate:"omitempty,oneof=active inactive suspended"`
