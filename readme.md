@@ -129,7 +129,7 @@ localhost:3000/monitoring/jobs
 - [x] Scheduler / Cron Job
 - [x] Queue
 - [x] Logging
-- [ ] File Upload: S3
+- [x] File Upload: S3
 - [x] Rate Limiter
 
 ### Data

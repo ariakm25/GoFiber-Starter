@@ -30,6 +30,25 @@ require (
 	github.com/aead/chacha20poly1305 v0.0.0-20201124145622-1a5aba2a8b29 // indirect
 	github.com/aead/poly1305 v0.0.0-20180717145839-3fee0db0b635 // indirect
 	github.com/andybalholm/brotli v1.1.1 // indirect
+	github.com/aws/aws-sdk-go-v2 v1.30.0 // indirect
+	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.6.2 // indirect
+	github.com/aws/aws-sdk-go-v2/config v1.27.22 // indirect
+	github.com/aws/aws-sdk-go-v2/credentials v1.17.22 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.8 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.17.2 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.12 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.12 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/ini v1.8.0 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/v4a v1.3.12 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.11.2 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.3.14 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.11.14 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.17.12 // indirect
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.57.0 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.22.0 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.26.0 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sts v1.30.0 // indirect
+	github.com/aws/smithy-go v1.20.2 // indirect
 	github.com/bmatcuk/doublestar/v4 v4.7.1 // indirect
 	github.com/casbin/govaluate v1.2.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
@@ -43,6 +62,7 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
+	github.com/gofiber/storage/s3/v2 v2.2.0 // indirect
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
@@ -53,6 +73,7 @@ require (
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
+	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/klauspost/compress v1.17.11 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect

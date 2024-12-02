@@ -55,6 +55,12 @@ type EnvConfig struct {
 
 	RATE_LIMITER_MAX           int
 	RATE_LIMITER_TTL_IN_SECOND uint64
+
+	S3_BUCKET     string
+	S3_ENDPOINT   string
+	S3_REGION     string
+	S3_ACCESS_KEY string
+	S3_SECRET_KEY string
 }
 
 var GetConfig *EnvConfig

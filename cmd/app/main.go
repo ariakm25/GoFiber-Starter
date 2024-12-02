@@ -4,6 +4,7 @@ import (
 	database "GoFiber-API/external/database/postgres"
 	"GoFiber-API/external/database/redis"
 	"GoFiber-API/external/mail"
+	"GoFiber-API/external/storage"
 	"GoFiber-API/infra/middleware"
 	internal_casbin "GoFiber-API/internal/casbin"
 	"GoFiber-API/internal/config"
@@ -39,6 +40,11 @@ func main() {
 
 	// Init Mail
 	mail.NewMail()
+
+	// Init S3
+	if config.GetConfig.S3_BUCKET != "" && config.GetConfig.S3_ENDPOINT != "" && config.GetConfig.S3_REGION != "" {
+		storage.InitStorage()
+	}
 
 	// Init Worker
 	queue.InitQueueClient()
