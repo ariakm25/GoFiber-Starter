@@ -31,6 +31,8 @@ type EnvConfig struct {
 	DB_MAX_LIFETIME_CONNECTION  uint16
 	DB_MAX_IDLE_TIME_CONNECTION uint16
 
+	DB_ENABLE_AUTO_MIGRATE bool
+
 	DB_ENABLE_LOG      bool
 	REQUEST_ENABLE_LOG bool
 
@@ -83,6 +85,8 @@ func LoadConfig(path string) (config *EnvConfig) {
 	viper.SetDefault("DB_PASSWORD", "postgres")
 	viper.SetDefault("DB_NAME", "gofiber_api")
 	viper.SetDefault("DB_SSL_MODE", "disable")
+
+	viper.SetDefault("DB_ENABLE_AUTO_MIGRATE", true)
 
 	viper.SetDefault("DB_MAX_IDLE_CONNECTION", 10)
 	viper.SetDefault("DB_MAX_OPEN_CONNECTION", 50)

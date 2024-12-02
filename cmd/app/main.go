@@ -52,7 +52,9 @@ func main() {
 	}
 
 	// Auto Migrate the database
-	migration.Migrate()
+	if config.GetConfig.DB_ENABLE_AUTO_MIGRATE {
+		migration.Migrate()
+	}
 
 	// Init Casbin
 	internal_casbin.InitAdapter("casbin-rbac.conf", config.GetConfig.DB_HOST, config.GetConfig.DB_PORT, config.GetConfig.DB_USER, config.GetConfig.DB_PASSWORD, config.GetConfig.DB_NAME, config.GetConfig.DB_SSL_MODE)
